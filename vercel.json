@@ -30,5 +30,10 @@
   "env": {
     "NODE_ENV": "production",
     "VERCEL": "1"
+  },
+  "functions": {
+    "vercel.py": {
+      "maxDuration": 30
+    }
   }
 }

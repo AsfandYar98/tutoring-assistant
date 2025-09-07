@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import logging
 from app.core.vercel_config import settings
-from app.api import chat, quiz, content, auth
+from app.api import vercel_chat, quiz, content, auth
 from app.core.database import engine, Base
 
 # Configure logging
@@ -36,7 +36,7 @@ app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 # Include routers
 app.include_router(auth.router)
-app.include_router(chat.router)
+app.include_router(vercel_chat.router)
 app.include_router(quiz.router)
 app.include_router(content.router)
 
