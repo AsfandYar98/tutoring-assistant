@@ -58,12 +58,9 @@ async def startup_event():
 
 @app.get("/")
 async def root():
-    """Root endpoint."""
-    return {
-        "message": "AI Tutoring Assistant API",
-        "version": settings.app_version,
-        "status": "running"
-    }
+    """Root endpoint - redirect to frontend."""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/frontend/index.html")
 
 
 @app.get("/health")
