@@ -3,14 +3,7 @@
   "builds": [
     {
       "src": "vercel.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
-    },
-    {
-      "src": "frontend/**",
-      "use": "@vercel/static"
+      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -26,14 +19,5 @@
       "src": "/",
       "dest": "/frontend/index.html"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "VERCEL": "1"
-  },
-  "functions": {
-    "vercel.py": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }
