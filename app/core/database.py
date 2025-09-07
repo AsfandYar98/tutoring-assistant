@@ -1,9 +1,15 @@
 """Database configuration and session management."""
 
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from app.core.config import settings
+
+# Use Vercel config if running on Vercel, otherwise use regular config
+if os.getenv("VERCEL"):
+    from app.core.vercel_config import settings
+else:
+    from app.core.config import settings
 
 # Create database engine
 engine = create_engine(

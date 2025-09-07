@@ -2,11 +2,22 @@
   "version": 2,
   "builds": [
     {
+      "src": "vercel.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    },
+    {
       "src": "frontend/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/vercel.py"
+    },
     {
       "src": "/frontend/(.*)",
       "dest": "/frontend/$1"
@@ -17,6 +28,7 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "VERCEL": "1"
   }
 }

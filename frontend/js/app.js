@@ -5,7 +5,7 @@
 
 class TutoringApp {
     constructor() {
-        this.API_BASE = 'http://localhost:8000';
+        this.API_BASE = '/api';
         this.authToken = localStorage.getItem('authToken');
         this.currentCourseId = null;
         this.currentSessionId = null;
