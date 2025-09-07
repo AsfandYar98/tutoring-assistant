@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # Main application
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/tutoring_assistant
+      - REDIS_URL=redis://redis:6379/0
+      - CHROMA_HOST=chroma
+      - CHROMA_PORT=8000
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-here
+      - ENCRYPTION_KEY=your-32-byte-encryption-key-here
+    depends_on:
+      - db
+      - redis
+      - chroma
+    volumes:
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+
+  # PostgreSQL database
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=tutoring_assistant
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # Redis for caching and rate limiting
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # ChromaDB for vector storage
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+    restart: unless-stopped
+
+  # vLLM server for LLM inference
+  vllm:
+    image: vllm/vllm-openai:latest
+    ports:
+      - "8002:8000"
+    environment:
+      - MODEL_NAME=llama-3.2-3b-instruct
+      - HOST=0.0.0.0
+      - PORT=8000
+    volumes:
+      - vllm_cache:/root/.cache
+    command: --model llama-3.2-3b-instruct --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  chroma_data:
+  vllm_cache:

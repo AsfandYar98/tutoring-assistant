@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutoring Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 40px;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(4px);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .stat-card p {
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4fd1c7 0%, #06b6d4 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: 600px;
+        }
+
+        .chat-messages {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            overflow-y: auto;
+            height: 500px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.assistant {
+            background: white;
+            color: #2d3748;
+            margin-right: auto;
+            border: 1px solid #e2e8f0;
+        }
+
+        .message.system {
+            background: #fef5e7;
+            color: #744210;
+            border: 1px solid #f6e05e;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .course-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+        }
+
+        .course-card h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .course-card p {
+            color: #718096;
+            margin-bottom: 15px;
+        }
+
+        .quiz-question {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .quiz-question h4 {
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .quiz-options {
+            list-style: none;
+        }
+
+        .quiz-options li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-options li:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+
+        .quiz-options li.selected {
+            border-color: #667eea;
+            background: #ebf8ff;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status.success {
+            background: #f0fff4;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .status.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+        }
+
+        .status.info {
+            background: #ebf8ff;
+            color: #2a4365;
+            border: 1px solid #90cdf4;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .chat-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .chat-messages {
+                height: 300px;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #2d3748;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1><i class="fas fa-graduation-cap"></i> AI Tutor</h1>
+            <p>Intelligent Learning Platform</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('courses')">
+                        <i class="fas fa-book"></i> Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('chat')">
+                        <i class="fas fa-comments"></i> AI Chat
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('quiz')">
+                        <i class="fas fa-question-circle"></i> Quiz Generator
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('analytics')">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('settings')">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div>
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2 id="pageTitle">Dashboard</h2>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div>
+                    <div id="userName">User</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;" id="userEmail">user@example.com</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-comments"></i>
+                    <h3 id="totalSessions">0</h3>
+                    <p>Chat Sessions</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-message"></i>
+                    <h3 id="totalMessages">0</h3>
+                    <p>Messages</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-question-circle"></i>
+                    <h3 id="totalQuizzes">0</h3>
+                    <p>Quizzes Generated</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-book"></i>
+                    <h3 id="totalCourses">0</h3>
+                    <p>Courses</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> Recent Activity</h3>
+                <div id="recentActivity">
+                    <p>No recent activity</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Section -->
+        <div id="courses" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-plus"></i> Create New Course</h3>
+                <div class="form-group">
+                    <label for="courseName">Course Name</label>
+                    <input type="text" id="courseName" placeholder="e.g., Advanced Python Programming">
+                </div>
+                <div class="form-group">
+                    <label for="courseDescription">Description</label>
+                    <textarea id="courseDescription" rows="3" placeholder="Course description..."></textarea>
+                </div>
+                <button class="btn" onclick="createCourse()">
+                    <i class="fas fa-plus"></i> Create Course
+                </button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-book"></i> Your Courses</h3>
+                <div class="course-list" id="courseList">
+                    <p>No courses yet. Create your first course!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Section -->
+        <div id="chat" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-comments"></i> AI Chat Assistant</h3>
+                <div class="form-group">
+                    <label for="courseSelect">Select Course</label>
+                    <select id="courseSelect">
+                        <option value="">Select a course to start chatting</option>
+                    </select>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message system">
+                            <i class="fas fa-robot"></i> Welcome! Select a course and start asking questions.
+                        </div>
+                    </div>
+                    <div>
+                        <h4>Quick Actions</h4>
+                        <button class="btn btn-secondary" onclick="askQuestion('What are the main topics in this course?')">
+                            <i class="fas fa-lightbulb"></i> Course Overview
+                        </button>
+                        <button class="btn btn-secondary" onclick="askQuestion('Can you explain this concept in simple terms?')">
+                            <i class="fas fa-question"></i> Explain Concept
+                        </button>
+                        <button class="btn btn-secondary" onclick="askQuestion('What are some practical examples?')">
+                            <i class="fas fa-code"></i> Examples
+                        </button>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Ask me anything about your course..." onkeypress="handleKeyPress(event)">
+                    <button class="btn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-question-circle"></i> Quiz Generator</h3>
+                <div class="form-group">
+                    <label for="quizTopic">Topic</label>
+                    <input type="text" id="quizTopic" placeholder="e.g., Python functions and classes">
+                </div>
+                <div class="form-group">
+                    <label for="quizDifficulty">Difficulty</label>
+                    <select id="quizDifficulty">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quizQuestions">Number of Questions</label>
+                    <input type="number" id="quizQuestions" value="5" min="1" max="20">
+                </div>
+                <button class="btn" onclick="generateQuiz()">
+                    <i class="fas fa-magic"></i> Generate Quiz
+                </button>
+                <div id="quizContainer"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-chart-bar"></i> Learning Analytics</h3>
+                <p>Analytics features coming soon...</p>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-cog"></i> Settings</h3>
+                <div class="form-group">
+                    <label for="apiKey">OpenAI API Key</label>
+                    <input type="password" id="apiKey" placeholder="Enter your OpenAI API key">
+                </div>
+                <button class="btn" onclick="saveSettings()">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000';
+        let authToken = localStorage.getItem('authToken');
+        let currentCourseId = null;
+        let currentSessionId = null;
+        let currentQuiz = null;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkAuthStatus()) {
+                loadCourses();
+                updateStats();
+            }
+        });
+
+        // Navigation functions
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update page title
+            const titles = {
+                'dashboard': 'Dashboard',
+                'courses': 'Courses',
+                'chat': 'AI Chat',
+                'quiz': 'Quiz Generator',
+                'analytics': 'Analytics',
+                'settings': 'Settings'
+            };
+            document.getElementById('pageTitle').textContent = titles[sectionId];
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Authentication functions
+        function checkAuthStatus() {
+            if (!authToken) {
+                // No token found, redirect to login
+                alert('Please log in first');
+                window.location.href = 'index.html';
+                return false;
+            }
+            
+            // User is logged in
+            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail') || 'user@example.com';
+            document.getElementById('userName').textContent = localStorage.getItem('userName') || 'User';
+            document.getElementById('userAvatar').textContent = (localStorage.getItem('userName') || 'User').charAt(0).toUpperCase();
+            return true;
+        }
+
+        // Course management
+        async function createCourse() {
+            if (!checkAuthStatus()) return;
+            
+            const name = document.getElementById('courseName').value;
+            const description = document.getElementById('courseDescription').value;
+
+            if (!name) {
+                showStatus('Please enter a course name', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/content/courses`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ name, description })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('Course created successfully!', 'success');
+                    document.getElementById('courseName').value = '';
+                    document.getElementById('courseDescription').value = '';
+                    loadCourses();
+                } else {
+                    showStatus(data.detail || 'Failed to create course', 'error');
+                }
+            } catch (error) {
+                showStatus('Network error: ' + error.message, 'error');
+            }
+        }
+
+        async function loadCourses() {
+            if (!checkAuthStatus()) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/content/courses`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    const courseSelect = document.getElementById('courseSelect');
+                    const courseList = document.getElementById('courseList');
+                    
+                    courseSelect.innerHTML = '<option value="">Select a course to start chatting</option>';
+                    courseList.innerHTML = '';
+
+                    if (data.length === 0) {
+                        courseList.innerHTML = '<p>No courses yet. Create your first course!</p>';
+                        return;
+                    }
+
+                    data.forEach(course => {
+                        const option = document.createElement('option');
+                        option.value = course.id;
+                        option.textContent = course.name;
+                        courseSelect.appendChild(option);
+
+                        const courseDiv = document.createElement('div');
+                        courseDiv.className = 'course-card';
+                        courseDiv.innerHTML = `
+                            <h4>${course.name}</h4>
+                            <p>${course.description}</p>
+                            <button class="btn btn-secondary" onclick="selectCourse('${course.id}')">
+                                <i class="fas fa-play"></i> Start Learning
+                            </button>
+                        `;
+                        courseList.appendChild(courseDiv);
+                    });
+
+                    updateStats();
+                }
+            } catch (error) {
+                console.error('Error loading courses:', error);
+            }
+        }
+
+        function selectCourse(courseId) {
+            document.getElementById('courseSelect').value = courseId;
+            showSection('chat');
+        }
+
+        // Chat functions
+        async function sendMessage() {
+            const message = document.getElementById('messageInput').value;
+            const courseId = document.getElementById('courseSelect').value;
+
+            if (!message.trim()) return;
+            if (!courseId) {
+                showStatus('Please select a course first', 'error');
+                return;
+            }
+
+            addMessage(message, 'user');
+            document.getElementById('messageInput').value = '';
+
+            if (!currentSessionId || currentCourseId !== courseId) {
+                await createChatSession(courseId);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/chat/sessions/${currentSessionId}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        message,
+                        course_id: courseId
+                    })
+                });
+
+                if (!response.ok) {
+                    addMessage('Sorry, I encountered an error processing your request.', 'assistant');
+                    return;
+                }
+
+                // Handle streaming response
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let assistantMessage = '';
+                let messageElement = null;
+
+                // Create assistant message element
+                const messagesContainer = document.getElementById('chatMessages');
+                messageElement = document.createElement('div');
+                messageElement.className = 'message assistant';
+                messagesContainer.appendChild(messageElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        const chunk = decoder.decode(value);
+                        const lines = chunk.split('\n');
+
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const data = JSON.parse(line.slice(6));
+                                    if (data.content) {
+                                        assistantMessage += data.content;
+                                        messageElement.textContent = assistantMessage;
+                                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                    }
+                                    if (data.done) {
+                                        updateStats();
+                                        return;
+                                    }
+                                    if (data.error) {
+                                        messageElement.textContent = 'Error: ' + data.error;
+                                        return;
+                                    }
+                                } catch (e) {
+                                    // Skip malformed JSON
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                } finally {
+                    reader.releaseLock();
+                }
+
+                if (assistantMessage) {
+                    messageElement.textContent = assistantMessage;
+                } else {
+                    messageElement.textContent = 'I received your message but couldn\'t generate a response.';
+                }
+                updateStats();
+
+            } catch (error) {
+                addMessage('Network error: ' + error.message, 'assistant');
+            }
+        }
+
+        function askQuestion(question) {
+            document.getElementById('messageInput').value = question;
+            sendMessage();
+        }
+
+        async function createChatSession(courseId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/chat/sessions?course_id=${courseId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    currentSessionId = data.id;
+                    currentCourseId = courseId;
+                }
+            } catch (error) {
+                console.error('Error creating chat session:', error);
+            }
+        }
+
+        function addMessage(content, type) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Quiz functions
+        async function generateQuiz() {
+            const topic = document.getElementById('quizTopic').value;
+            const difficulty = document.getElementById('quizDifficulty').value;
+            const numQuestions = document.getElementById('quizQuestions').value;
+            const courseId = document.getElementById('courseSelect').value;
+
+            if (!topic) {
+                showStatus('Please enter a quiz topic', 'error');
+                return;
+            }
+
+            if (!courseId) {
+                showStatus('Please select a course first', 'error');
+                return;
+            }
+
+            const quizContainer = document.getElementById('quizContainer');
+            quizContainer.innerHTML = '<div class="loading"></div> Generating quiz...';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/quiz/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        topic,
+                        difficulty,
+                        num_questions: parseInt(numQuestions),
+                        course_id: courseId
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    displayQuiz(data.questions || []);
+                    updateStats();
+                } else {
+                    quizContainer.innerHTML = '<div class="status error">Failed to generate quiz: ' + (data.detail || 'Unknown error') + '</div>';
+                }
+            } catch (error) {
+                quizContainer.innerHTML = '<div class="status error">Network error: ' + error.message + '</div>';
+            }
+        }
+
+        function displayQuiz(questions) {
+            const quizContainer = document.getElementById('quizContainer');
+            quizContainer.innerHTML = '';
+
+            questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'quiz-question';
+                questionDiv.innerHTML = `
+                    <h4>Question ${index + 1}: ${question.question}</h4>
+                    <ul class="quiz-options">
+                        ${question.options.map((option, optIndex) => `
+                            <li onclick="selectAnswer(${index}, ${optIndex})" data-question="${index}" data-option="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}. ${option}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                quizContainer.appendChild(questionDiv);
+            });
+
+            currentQuiz = questions;
+        }
+
+        function selectAnswer(questionIndex, optionIndex) {
+            const options = document.querySelectorAll(`[data-question="${questionIndex}"]`);
+            options.forEach(option => option.classList.remove('selected'));
+            options[optionIndex].classList.add('selected');
+        }
+
+        // Utility functions
+        function showStatus(message, type) {
+            const existingStatus = document.querySelector('.status');
+            if (existingStatus) {
+                existingStatus.remove();
+            }
+
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+            
+            document.querySelector('.main-content').insertBefore(statusDiv, document.querySelector('.main-content').firstChild);
+            
+            setTimeout(() => {
+                if (statusDiv.parentNode) {
+                    statusDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function updateStats() {
+            const messages = document.querySelectorAll('.message').length;
+            document.getElementById('totalMessages').textContent = messages;
+            
+            if (currentSessionId) {
+                document.getElementById('totalSessions').textContent = '1';
+            }
+            
+            if (currentQuiz) {
+                document.getElementById('totalQuizzes').textContent = '1';
+            }
+
+            const courses = document.querySelectorAll('.course-card').length;
+            document.getElementById('totalCourses').textContent = courses;
+        }
+
+        function saveSettings() {
+            const apiKey = document.getElementById('apiKey').value;
+            if (apiKey) {
+                localStorage.setItem('openai_api_key', apiKey);
+                showStatus('Settings saved!', 'success');
+            }
+        }
+    </script>
+</body>
+</html>
