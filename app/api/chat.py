@@ -6,9 +6,8 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
 from app.api.dependencies import get_current_user, get_db
-from app.services.rag_orchestrator import RAGOrchestrator
+from app.services.simple_rag_orchestrator import SimpleRAGOrchestrator
 from app.models.chat import ChatSession, ChatMessage
-import uuid
 import json
 import logging
 
@@ -177,7 +176,7 @@ async def send_message(
     ]
     
     # Initialize RAG orchestrator
-    rag = RAGOrchestrator()
+    rag = SimpleRAGOrchestrator()
     
     async def generate_response():
         """Generate streaming response."""
@@ -199,7 +198,7 @@ async def send_message(
                 session_id=session_id,
                 role="assistant",
                 content=response_content,
-                metadata={"sources": []}  # TODO: Add source citations
+                metadata={"sources": []}
             )
             db.add(assistant_message)
             db.commit()

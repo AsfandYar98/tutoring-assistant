@@ -1,4 +1,4 @@
-"""Simplified OpenAI service for Vercel."""
+"""Simplified OpenAI service."""
 
 import logging
 from openai import OpenAI
@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class SimpleOpenAIService:
-    """Simplified OpenAI service for Vercel deployment."""
+    """Simplified OpenAI service."""
     
     def __init__(self, api_key: str, model: str = "gpt-4"):
         self.client = OpenAI(api_key=api_key)

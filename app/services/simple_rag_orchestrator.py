@@ -1,17 +1,17 @@
-"""Ultra-simple RAG orchestrator for Vercel."""
+"""Simplified RAG orchestrator."""
 
 import json
 import logging
 from typing import List, Dict, Any, AsyncGenerator
 from app.services.simple_vector_service import SimpleVectorService
 from app.services.simple_openai_service import SimpleOpenAIService
-from app.core.vercel_config import settings
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
 
 class SimpleRAGOrchestrator:
-    """Ultra-simple RAG orchestrator for Vercel."""
+    """Simplified RAG orchestrator."""
     
     def __init__(self):
         self.vector_service = SimpleVectorService(settings.openai_api_key)

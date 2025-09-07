@@ -1,4 +1,4 @@
-"""Ultra-simple vector service for Vercel."""
+"""Simplified vector service."""
 
 import json
 import logging
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class SimpleVectorService:
-    """Ultra-simple vector service for Vercel deployment."""
+    """Simplified vector service."""
     
     def __init__(self, openai_api_key: str):
         self.openai_api_key = openai_api_key
