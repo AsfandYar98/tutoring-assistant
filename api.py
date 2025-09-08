@@ -64,12 +64,13 @@ try:
     from app.api import auth, content, quiz
     from app.api.chat import router as chat_router
     
+    # Include routers (they already have their own prefixes)
     app.include_router(auth.router)
     app.include_router(chat_router)
     app.include_router(quiz.router)
     app.include_router(content.router)
     
-    logger.info("Successfully imported and included all routers")
+    logger.info("Successfully imported and included all routers with /api/v1 prefix")
 except Exception as e:
     logger.error(f"Error importing routers: {e}")
     # Create a simple fallback endpoint
