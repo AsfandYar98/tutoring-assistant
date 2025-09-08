@@ -1,9 +1,17 @@
 """API entry point for Vercel deployment."""
 
 import os
-from fastapi import FastAPI
+import sys
+from pathlib import Path
+
+# Add the current directory to Python path
+current_dir = Path(__file__).parent
+sys.path.insert(0, str(current_dir))
+
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse, JSONResponse
 import logging
 
 # Set up logging
@@ -29,7 +37,29 @@ app.add_middleware(
 # Mount static files
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
-# Import and include routers
+# Root endpoint
+@app.get("/")
+async def root():
+    """Root endpoint - redirect to frontend."""
+    return RedirectResponse(url="/frontend/index.html")
+
+# Health check
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {
+        "status": "healthy",
+        "version": "1.0.0",
+        "platform": "Vercel"
+    }
+
+# Simple API endpoints for testing
+@app.get("/api/test")
+async def test_api():
+    """Test API endpoint."""
+    return {"message": "API is working!", "status": "success"}
+
+# Try to import and include routers, but don't fail if they don't work
 try:
     from app.api import auth, content, quiz
     from app.api.chat import router as chat_router
@@ -42,20 +72,7 @@ try:
     logger.info("Successfully imported and included all routers")
 except Exception as e:
     logger.error(f"Error importing routers: {e}")
-
-# Root endpoint
-@app.get("/")
-async def root():
-    """Root endpoint - redirect to frontend."""
-    from fastapi.responses import RedirectResponse
-    return RedirectResponse(url="/frontend/index.html")
-
-# Health check
-@app.get("/health")
-async def health_check():
-    """Health check endpoint."""
-    return {
-        "status": "healthy",
-        "version": "1.0.0",
-        "platform": "Vercel"
-    }
+    # Create a simple fallback endpoint
+    @app.get("/api/fallback")
+    async def fallback():
+        return {"message": "Some features may not be available", "error": str(e)}
